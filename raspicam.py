@@ -33,20 +33,6 @@ time.sleep(.25)
 camera.exposure_mode = 'off'
 camera.meter_mode = 'spot'
 
-# # allow the camera to warmup
-# time.sleep(0.1)
-# # grab an image from the camera
-# camera.capture(rawCapture, format="bgr")
-# image = rawCapture.array
-# #image = cv2.imread('foo.jpg')
-# hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-# mask = cv2.inRange(hsv, lower_green, upper_green)
-# print(sum(sum(mask)))
-# # cv2.imshow('a',image)
-# # cv2.waitKey(0)
-# # cv2.imshow('a',mask)
-# # cv2.waitKey(0)
-
 try:
     requests.post('http://192.168.1.20:8060/keypress/VolumeUp')
     requests.post('http://192.168.1.20:8060/keypress/VolumeDown')
@@ -58,9 +44,6 @@ except KeyboardInterrupt:
 
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     image = frame.array
-    #rawCapture = PiRGBArray(camera)
-    #time.sleep(.5)
-    #camera.capture(rawCapture, format='bgr')
     image = rawCapture.array
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, lower_green, upper_green)
@@ -90,7 +73,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
            print('not ad: '+ str(sum_mask))
 
 
-    if time.time()-check_time > 60*5:
+    if time.time()-check_time > 60*5: # update the current app name
         response = requests.get('http://192.168.1.20:8060/query/active-app')
         response_dict = xmltodict.parse(response.text)
     
