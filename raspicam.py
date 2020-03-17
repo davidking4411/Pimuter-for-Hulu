@@ -8,12 +8,16 @@ import xmltodict
 import requests
 
 def get_active_app():
-    response = requests.get('http://192.168.1.20:8060/query/active-app')
-    response_dict = xmltodict.parse(response.text)
-    try: #if on home screen 'app' is last field so it'll error out
-        return response_dict['active-app']['app']['#text']
+    try:
+        response = requests.get('http://192.168.1.20:8060/query/active-app')
+        response_dict = xmltodict.parse(response.text)
+        try: #if on home screen 'app' is last field so it'll error out
+            return response_dict['active-app']['app']['#text']
+        except:
+            return 'Home'
     except:
-        return 'Home'
+        Print('could not reach Roku')
+        return 'Not Roku'
 
 # initialize the camera and grab a reference to the raw camera capture
 ad_history = [0,0,0,0]
@@ -46,9 +50,7 @@ active_app = get_active_app()
 try:
     requests.post('http://192.168.1.20:8060/keypress/VolumeUp')
     requests.post('http://192.168.1.20:8060/keypress/VolumeDown')
-    
-    
-except KeyboardInterrupt:
+except:
     print('unmuting failed')
 
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -69,21 +71,27 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
            print('ad: '+ str(sum_mask))
            if not muted and active_app == 'Hulu':
                print('muting')
-               requests.post('http://192.168.1.20:8060/keypress/VolumeUp')
-               requests.post('http://192.168.1.20:8060/keypress/VolumeDown')
-               requests.post('http://192.168.1.20:8060/keypress/VolumeMute')
-               muted = True
+               try:
+                   requests.post('http://192.168.1.20:8060/keypress/VolumeUp')
+                   requests.post('http://192.168.1.20:8060/keypress/VolumeDown')
+                   requests.post('http://192.168.1.20:8060/keypress/VolumeMute')
+                   muted = True
+               except:
+                   print('muting failed')
     elif muted and (8000 >= np.mean(ad_history)):
            print('not ad: '+ str(sum_mask))
            print('unmuting')
-           muted = False
-           requests.post('http://192.168.1.20:8060/keypress/VolumeUp')
-           requests.post('http://192.168.1.20:8060/keypress/VolumeDown')
+           try:
+               requests.post('http://192.168.1.20:8060/keypress/VolumeUp')
+               requests.post('http://192.168.1.20:8060/keypress/VolumeDown')
+               muted = False
+           except:
+                print('unmuting failed')
     else:
            print('not ad: '+ str(sum_mask))
 
 
-    if time.time()-check_time > 60*3: # check if Hulu is even the running app
+    if time.time()-check_time > 60*2: # check if Hulu is even the open app
         active_app = get_active_app()
         while active_app != 'Hulu':
             #don't bother getting another frame from the camera if Hulu isn't the current app
