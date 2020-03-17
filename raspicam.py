@@ -83,7 +83,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
            print('not ad: '+ str(sum_mask))
 
 
-    if time.time()-check_time > 60*2: # check if Hulu is even the running app
+    if time.time()-check_time > 60*3: # check if Hulu is even the running app
         active_app = get_active_app()
         while active_app != 'Hulu':
             #don't bother getting another frame from the camera if Hulu isn't the current app
