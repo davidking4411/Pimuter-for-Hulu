@@ -1,5 +1,5 @@
 # Pimuter-for-Hulu
-Reads the "Ad" symbol on Hulu ads and mutes the Roku TV using its API when present.
+Reads the "Ad" symbol on Hulu ads and mutes the Roku TV using its [External Control Protocol API] (https://developer.roku.com/docs/developer-program/debugging/external-control-api.md) when Hulu is the active app.
 This could potentially work for hulu streaming sticks or boxes depending on how the volume control is set up with the tv.
 Designed to run continuously, it checks every three minutes to see if Hulu is the active app and turns the image processing on or off accordingly to save power and heat that can shorten the pi's lifespan. A live view of the crop region and resulting mask is displayed for tuning the behavior. I'd suggest commenting these out to minimize the processing required of the pi when not tuning.
 
