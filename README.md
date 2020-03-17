@@ -1,4 +1,4 @@
-# Pimuter-for-Hulu
+# Pimuter for Hulu
 Reads the "Ad" symbol on Hulu ads and mutes the Roku TV using its
 [External Control Protocol API](https://developer.roku.com/docs/developer-program/debugging/external-control-api.md)
 when Hulu is the active app.
