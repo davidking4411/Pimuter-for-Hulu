@@ -9,17 +9,18 @@ import requests
 
 def get_active_app():
     try:
-        response = requests.get('http://192.168.1.20:8060/query/active-app')
+        response = requests.get('http://192.168.1.20:8060/query/active-app', timeout=1)
         response_dict = xmltodict.parse(response.text)
         try: #if on home screen 'app' is last field so it'll error out
+            print('Active app is Hulu')
             return response_dict['active-app']['app']['#text']
         except:
+            print('Active app is Home screen')
             return 'Home'
     except:
-        Print('could not reach Roku')
+        print('could not reach the Roku')
         return 'Not Roku'
 
-# initialize the camera and grab a reference to the raw camera capture
 ad_history = [0,0,0,0]
 #lower_green = np.array([20, 50,48]) # HSV values
 #upper_green = np.array([50, 260, 255])
@@ -47,9 +48,10 @@ time.sleep(.25)
 camera.exposure_mode = 'off'
 camera.meter_mode = 'spot'
 active_app = get_active_app()
+
 try:
-    requests.post('http://192.168.1.20:8060/keypress/VolumeUp')
-    requests.post('http://192.168.1.20:8060/keypress/VolumeDown')
+    requests.post('http://192.168.1.20:8060/keypress/VolumeUp', timeout=1)
+    requests.post('http://192.168.1.20:8060/keypress/VolumeDown', timeout=1)
 except:
     print('unmuting failed')
 
@@ -72,9 +74,9 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
            if not muted and active_app == 'Hulu':
                print('muting')
                try:
-                   requests.post('http://192.168.1.20:8060/keypress/VolumeUp')
-                   requests.post('http://192.168.1.20:8060/keypress/VolumeDown')
-                   requests.post('http://192.168.1.20:8060/keypress/VolumeMute')
+                   requests.post('http://192.168.1.20:8060/keypress/VolumeUp', timeout=1)
+                   requests.post('http://192.168.1.20:8060/keypress/VolumeDown', timeout=1)
+                   requests.post('http://192.168.1.20:8060/keypress/VolumeMute', timeout=1)
                    muted = True
                except:
                    print('muting failed')
@@ -82,8 +84,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
            print('not ad: '+ str(sum_mask))
            print('unmuting')
            try:
-               requests.post('http://192.168.1.20:8060/keypress/VolumeUp')
-               requests.post('http://192.168.1.20:8060/keypress/VolumeDown')
+               requests.post('http://192.168.1.20:8060/keypress/VolumeUp', timeout=1)
+               requests.post('http://192.168.1.20:8060/keypress/VolumeDown', timeout=1)
                muted = False
            except:
                 print('unmuting failed')
