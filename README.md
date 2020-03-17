@@ -9,8 +9,8 @@ It crops the frame to the target region and creates a binary mask based on the p
 ### Required Changes for new Instantiations
 Just change the IP address of your Roku device. You can adjust the size of the crop region but for now this is done separately from the rectangle selection. Will combine these in the future into one parameter.
 
-### Pi Cam Setup at Bottom Left of Hulu Screen
-<img src="pi_setup.jpg" alt="Pi Cam Setup at Bottom Left of Hulu Screen" width="500">
-
 ### Live View of Crop Region and Mask
 <img src="live_view.png" alt="Live View of Crop Region and Mask" width="500">
+
+### Pi Cam Setup at Bottom Left of Hulu Screen
+<img src="pi_setup.jpg" alt="Pi Cam Setup at Bottom Left of Hulu Screen" width="500">
