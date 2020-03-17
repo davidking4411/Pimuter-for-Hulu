@@ -15,6 +15,8 @@ green = np.uint8([[[49, 166, 187]]])
 hsvGreen = cv2.cvtColor(green,cv2.COLOR_BGR2HSV)
 lower_green = np.uint8([hsvGreen[0][0][0]-10,50,48])
 upper_green = np.uint8([hsvGreen[0][0][0]+10,255,255])
+lower_green = np.uint8([hsvGreen[0][0][0]-10,50,50])
+upper_green = np.uint8([hsvGreen[0][0][0]+10,255,255])
 
 #for rectangle
 start_point = (int(640/2-75), int(480/2-75)) 
@@ -33,6 +35,20 @@ time.sleep(.25)
 camera.exposure_mode = 'off'
 camera.meter_mode = 'spot'
 
+# # allow the camera to warmup
+# time.sleep(0.1)
+# # grab an image from the camera
+# camera.capture(rawCapture, format="bgr")
+# image = rawCapture.array
+# #image = cv2.imread('foo.jpg')
+# hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+# mask = cv2.inRange(hsv, lower_green, upper_green)
+# print(sum(sum(mask)))
+# # cv2.imshow('a',image)
+# # cv2.waitKey(0)
+# # cv2.imshow('a',mask)
+# # cv2.waitKey(0)
+
 try:
     requests.post('http://192.168.1.20:8060/keypress/VolumeUp')
     requests.post('http://192.168.1.20:8060/keypress/VolumeDown')
@@ -44,10 +60,13 @@ except KeyboardInterrupt:
 
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     image = frame.array
+    #rawCapture = PiRGBArray(camera)
+    #time.sleep(.5)
+    #camera.capture(rawCapture, format='bgr')
     image = rawCapture.array
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, lower_green, upper_green)
-    cropped_mask = mask[75:220,220:415]
+    cropped_mask = mask[245:395,165:315]
     image_w_rec = cv2.rectangle(image, start_point, end_point, color, thickness)
     cv2.imshow('mask',mask)
     cv2.imshow('image',image_w_rec)
@@ -55,7 +74,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     ad_history.pop(0)
     ad_history.append(sum_mask)
     print('history mean', np.mean(ad_history))
-    if (26000 <= np.mean(ad_history)) and (np.mean(ad_history) <= 32000):
+    if (10000 <= np.mean(ad_history)) and (np.mean(ad_history) <= 13000):
            print('ad: '+ str(sum_mask))
            if not muted and response_dict['active-app']['app']['#text'] == 'Hulu':
                print('muting')
@@ -63,7 +82,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
                requests.post('http://192.168.1.20:8060/keypress/VolumeDown')
                requests.post('http://192.168.1.20:8060/keypress/VolumeMute')
                muted = True
-    elif muted and ((25000 >= np.mean(ad_history)) or (np.mean(ad_history) >= 33000)):
+    elif muted and (8000 >= np.mean(ad_history)):
            print('not ad: '+ str(sum_mask))
            print('unmuting')
            muted = False
@@ -73,13 +92,13 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
            print('not ad: '+ str(sum_mask))
 
 
-    if time.time()-check_time > 60*5: # update the current app name
+    if time.time()-check_time > 60*5:
         response = requests.get('http://192.168.1.20:8060/query/active-app')
         response_dict = xmltodict.parse(response.text)
     
     key = cv2.waitKey(1)
     rawCapture.truncate(0)
-    if key == 27:
+    if key == 27: # esacpe key
         break
 
 cv2.destroyAllWindows()
